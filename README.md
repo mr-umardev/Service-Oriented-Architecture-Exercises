@@ -1,6 +1,5 @@
 # Hello 👋, Welcome to the SOA Exercises Repository ! 🚀
 
-## **Hello again👋, Welcome to the SOA Learning Hub!**
 This repository is a **comprehensive collection of exercises** on **Service-Oriented Architecture (SOA)**, designed to help you master **asynchronous messaging, microservices, and event-driven design**. 🏗️
 
 ---
