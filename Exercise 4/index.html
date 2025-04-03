@@ -1,0 +1,122 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .positive {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .negative {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .neutral {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e2e3e5;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sentiment Analysis Service</h1>
+        <p>Enter text to analyze its sentiment:</p>
+        
+        <textarea id="textInput" rows="5" placeholder="Type your text here..."></textarea>
+        <button id="analyzeBtn">Analyze Sentiment</button>
+        
+        <div id="result" class="result" style="display: none;"></div>
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check service health
+            fetch('http://localhost:5000/health')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('status').textContent = 
+                        `Service Status: ${data.status} | Model Version: ${data.model_version}`;
+                })
+                .catch(error => {
+                    document.getElementById('status').textContent = 
+                        'Service Status: Unavailable. Please check if the service is running.';
+                });
+
+            // Handle analyze button click
+            document.getElementById('analyzeBtn').addEventListener('click', function() {
+                const text = document.getElementById('textInput').value.trim();
+                
+                if (!text) {
+                    alert('Please enter some text to analyze.');
+                    return;
+                }
+                
+                // Send request to the sentiment analysis service
+                fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.style.display = 'block';
+                    resultDiv.className = `result ${data.sentiment}`;
+                    resultDiv.innerHTML = `
+                        <h3>Sentiment: ${data.sentiment.toUpperCase()}</h3>
+                        <p>Score: ${(data.score * 100).toFixed(2)}%</p>
+                        <p>Text analyzed: "${data.text}"</p>
+                    `;
+                })
+                .catch(error => {
+                    alert('Error analyzing text. Please try again later.');
+                    console.error('Error:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
