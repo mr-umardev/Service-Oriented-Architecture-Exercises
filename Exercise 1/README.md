@@ -1,5 +1,5 @@
 Step 1: Build and run the Docker container:
-docker build -t products-service .
+docker build -t products-service
 docker run -p 5000:5000 products-service
 
 Step 2: Test with client script:(in cmd)
